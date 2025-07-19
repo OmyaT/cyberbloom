@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Cyberbloom</title>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css">
+
+	<style>
+		/* Keep original styling structure but fix positioning issues */
+		body {
+			font-family: 'Open Sans', sans-serif;
+			background: #333;
+			color: #fff;
+		}
+
+		#loader-wrapper {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			z-index: 1000;
+		}
+
+		#loader {
+			display: block;
+			position: relative;
+			left: 50%;
+			top: 50%;
+			width: 150px;
+			height: 150px;
+			margin: -75px 0 0 -75px;
+			border-radius: 50%;
+			border: 3px solid transparent;
+			border-top-color: #3498db;
+			animation: spin 2s linear infinite;
+		}
+
+		@keyframes spin {
+			0%   { transform: rotate(0deg); }
+			100% { transform: rotate(360deg); }
+		}
+
+		.loader-section {
+			position: fixed;
+			top: 0;
+			width: 51%;
+			height: 100%;
+			background: #222222;
+			z-index: 1000;
+			transform: translateX(0);
+		}
+
+		.loader-section.section-left {
+			left: 0;
+		}
+
+		.loader-section.section-right {
+			right: 0;
+		}
+
+		.loaded #loader-wrapper .loader-section.section-left {
+			transform: translateX(-100%);
+			transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+		}
+
+		.loaded #loader-wrapper .loader-section.section-right {
+			transform: translateX(100%);
+			transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+		}
+
+		.loaded #loader {
+			opacity: 0;
+			transition: all 0.3s ease-out;
+		}
+
+		.loaded #loader-wrapper {
+			visibility: hidden;
+			transform: translateY(-100%);
+			transition: all 0.3s 1s ease-out;
+		}
+
+		.tm-main {
+			background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"><defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23667eea;stop-opacity:1" /><stop offset="100%" style="stop-color:%23764ba2;stop-opacity:1" /></linearGradient></defs><rect width="1920" height="1080" fill="url(%23bg)"/></svg>');
+			background-size: cover;
+			background-position: center;
+			min-height: 100vh;
+		}
+
+		.tm-main-row {
+			min-height: 100vh;
+		}
+
+		/* Fix sidebar positioning - keep it higher */
+		.sidebar {
+			background: rgba(0,0,0,0.8);
+			min-height: 100vh;
+			position: relative;
+			padding-top: 50px; /* Moved sidebar content higher */
+		}
+
+		.menu-icon {
+			position: absolute;
+			top: 20px;
+			left: 20px;
+			background: none;
+			border: none;
+			color: white;
+			font-size: 24px;
+			display: none;
+			cursor: pointer;
+		}
+
+		.sidebar .inner {
+			padding: 20px;
+		}
+
+		.tm-main-nav ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
+
+		.tm-main-nav li {
+			margin-bottom: 10px;
+		}
+
+		.tm-main-nav a {
+			color: white;
+			text-decoration: none;
+			display: block;
+			padding: 15px 20px;
+			border-radius: 5px;
+			transition: all 0.3s;
+		}
+
+		.tm-main-nav a:hover,
+		.tm-main-nav a.active {
+			background: rgba(255,255,255,0.2);
+			color: white;
+		}
+
+		.tm-nav-fa-icon {
+			margin-right: 10px;
+		}
+
+		.tm-content {
+			padding: 40px;
+			min-height: 100vh;
+		}
+
+		.tm-section {
+			display: none;
+		}
+
+		.tm-text-shadow {
+			text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+		}
+
+		.tm-font-big {
+			font-size: 18px;
+			line-height: 1.6;
+		}
+
+		.tm-btn {
+			background: linear-gradient(45deg, #667eea, #764ba2);
+			color: white;
+			border: none;
+			padding: 12px 30px;
+			border-radius: 25px;
+			text-decoration: none;
+			display: inline-block;
+			margin-top: 20px;
+			transition: all 0.3s;
+		}
+
+		.tm-btn:hover {
+			transform: translateY(-2px);
+			color: white;
+		}
+
+		/* Fix section 3 spacing */
+		#tm-section-3 .mb-5:last-of-type {
+			margin-bottom: 3rem !important; /* Add more space before acknowledgments */
+		}
+
+		/* Contact form styling */
+		.tm-bg-transparent-black {
+			background: rgba(0,0,0,0.6);
+			padding: 40px;
+			border-radius: 10px;
+		}
+
+		.form-control {
+			background: rgba(255,255,255,0.1);
+			border: 1px solid rgba(255,255,255,0.3);
+			color: white;
+		}
+
+		.form-control:focus {
+			background: rgba(255,255,255,0.2);
+			border-color: #667eea;
+			color: white;
+		}
+
+		.form-control::placeholder {
+			color: rgba(255,255,255,0.7);
+		}
+
+		/* Mobile responsiveness */
+		@media (max-width: 992px) {
+			.menu-icon {
+				display: block;
+			}
+
+			.sidebar 
+			{
+				position: fixed;
+				top: 0;
+				left: -100%;
+				width: 300px;
+				z-index: 1000;
+				transition: left 0.3s;
+			}
+
+			.sidebar.show {
+				left: 0;
+			}
+
+			.tm-content {
+				margin-left: 0;
+			}
+		}
+	</style>
+
+	<script>
+		var renderPage = true;
+
+		if(navigator.userAgent.indexOf('MSIE')!==-1
+			|| navigator.appVersion.indexOf('Trident/') > 0){
+			alert("Please view this in a modern browser such as Chrome or Microsoft Edge.");
+			renderPage = false;
+		}
+	</script>
+</head>
+
+<body>
+	<!-- Loader -->
+	<div id="loader-wrapper">
+		<div id="loader"></div>
+		<div class="loader-section section-left"></div>
+		<div class="loader-section section-right"></div>
+	</div>
+	
+	<!-- Page Content -->
+	<div class="container-fluid tm-main">
+		<div class="row tm-main-row">
+
+			<!-- Sidebar -->
+			<div id="tmSideBar" class="col-xl-3 col-lg-4 col-md-12 col-sm-12 sidebar">
+
+				<button id="tmMainNavToggle" class="menu-icon">&#9776;</button>
+
+				<div class="inner">
+					<nav id="tmMainNav" class="tm-main-nav">
+						<ul>
+
+							<li>
+								<a href="#intro" id="tmNavLink1" class="scrolly active" data-bg-img="constructive_111.jpg" data-page="#tm-section-1">
+									<i class="fas fa-home tm-nav-fa-icon"></i>
+									<span>About Cyberbloom</span>
+								</a>
+							</li>
+
+							<li>
+								<a href="#products" id="tmNavLink2" class="scrolly" data-bg-img="constructive_111.jpg" data-page="#tm-section-2" data-page-type="carousel">
+									<i class="fas fa-map tm-nav-fa-icon"></i>
+									<span>Lesson Archive</span>
+								</a>
+							</li>	
+
+							<li>
+								<a href="#intro" id="tmNavLink3" class="scrolly" data-bg-img="constructive_111.jpg" data-page="#tm-section-3">
+									<i class="fas fa-users tm-nav-fa-icon"></i>
+									<span>Shape the Future</span>
+								</a>
+							</li>
+
+							<li>
+								<a href="#contact" id="tmNavLink4" class="scrolly" data-bg-img="constructive_111.jpg" data-page="#tm-section-4">
+									<i class="fas fa-comments tm-nav-fa-icon"></i>
+									<span>Contact Us</span>
+								</a>
+							</li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+
+			<div class="col-xl-9 col-lg-8 col-md-12 col-sm-12 tm-content">
+
+					<!-- section 1 -->
+					<section id="tm-section-1" class="tm-section">
+						<div class="ml-auto">
+							<header class="mb-4"><h1 class="tm-text-shadow">Cyberbloom</h1></header>
+							<p class="mb-5 tm-font-big"></p>
+							<p class="mb-5 tm-font-big">Cyberbloom is a student-led initiative dedicated to helping senior citizens feel confident in their skills, particularly in navigating through the digital world. Through interactive weekly workshops, seniors learn about online safety, how to use smartphones, email, video apps, and so much more.</p>
+							
+							<!-- Image collage row for Cyberbloom -->
+								<div class="flex flex-wrap justify-center gap-3 mb-6">
+  									<img src="workshop_11.png" alt="" style="height: 200px; max-width: 130px; object-fit: cover; border-radius: 12px;" />
+  									<img src="workshop_222.png" alt="" style="height: 200px; max-width: 450px; object-fit: cover; border-radius: 12px;" />
+  									<img src="workshop_3.jpg" alt="" style="height: 200px; max-width: 130px; object-fit: cover; border-radius: 12px;" />
+
+									<img src="workshop_4.jpg" alt="" style="height: 200px; max-width: 130px; object-fit: cover; border-radius: 12px;" />
+									<img src="workshop_5.jpg" alt="" style="height: 200px; max-width: 450px; object-fit: cover; border-radius: 12px;" />
+									<img src="workshop_6.jpg" alt="" style="height: 200px; max-width: 130px; object-fit: cover; border-radius: 12px;" />
+									<img src="workshop_7.jpg" alt="" style="height: 200px; max-width: 100; object-fit: cover; border-radius: 12px;" />
+
+									<img src="workshop_22.jpg" alt="" style="height: 150; max-width: 75; object-fit: cover; border-radius: 12px;" />
+
+
+
+
+
+									
+								</div>
+
+
+							<p class="mb-5 tm-font-big">                           </p>
+							<p class="mb-5 tm-font-big">A Note from the Creator:</p>
+							<p class="mb-5 tm-font-big">As part of my Girl Scout Gold Award project, I designed Cyberbloom to support older adults in developing digital literacy with patience, care, and respect for the generation that shaped our world.</p>
+							<p class="mb-5 tm-font-big">From developing the website and presentations to coordinating workshop sessions, I've loved building this project from the ground up. I'm also incredibly grateful to my friends - Poornasai, and Cindy who have generously volunteered their time to support the workshops - I truly couldn't have done it without them!</p>
+							<a href="#" class="btn tm-btn tm-font-big" data-nav-link="#tmNavLink2">Continue...</a>
+						</div>
+					</section>
+
+					<!-- section 2 -->
+					<section id="tm-section-2" class="tm-section tm-section-carousel">
+						<div>
+							<header class="mb-4"><h2 class="tm-text-shadow">Lesson Archive</h2></header>		            
+							<p class="mb-5 tm-font-big"></p>
+							<p class="mb-5 tm-font-big">All lesson plans are free to use and easy to teach, perfect for anyone helping others learn. Seniors can also revisit them anytime to refresh what they've learned!</p>
+							<p class="mb-5 tm-font-big">
+								<div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">
+									<iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;" src="https://www.canva.com/design/DAGph4SkwXY/ZdaBH_4aiyAipp2ArTmsMQ/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen"></iframe>
+								</div>
+								<a href="https://www.canva.com/design/DAGph4SkwXY/ZdaBH_4aiyAipp2ArTmsMQ/view?utm_content=DAGph4SkwXY&utm_campaign=designshare&utm_medium=embeds&utm_source=link" target="_blank" rel="noopener"></a>
+								
+								<div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">
+									<iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;" src="https://www.canva.com/design/DAGqH4HjFfA/7PRKY5oGG3V44G07Vu3SpA/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen"></iframe>
+								</div>
+								<div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%;
+ padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;
+ border-radius: 8px; will-change: transform;">
+  <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
+    src="https://www.canva.com/design/DAGqS2SHxxk/VHvmkUvnT0faSFqTOU5_lQ/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
+  </iframe>
+</div>
+<a href="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAGqS2SHxxk&#x2F;VHvmkUvnT0faSFqTOU5_lQ&#x2F;view?utm_content=DAGqS2SHxxk&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener"></a>
+
+
+								<a href="https://www.canva.com/design/DAGqH4HjFfA/7PRKY5oGG3V44G07Vu3SpA/view?utm_content=DAGqH4HjFfA&utm_campaign=designshare&utm_medium=embeds&utm_source=link" target="_blank" rel="noopener"></a>
+								
+								<div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%;
+ padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;
+ border-radius: 8px; will-change: transform;">
+  <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
+    src="https://www.canva.com/design/DAGq1EugJd4/mRDplt03jNOOFaGiq0UmfA/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
+  </iframe>
+</div>
+<a href="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAGq1EugJd4&#x2F;mRDplt03jNOOFaGiq0UmfA&#x2F;view?utm_content=DAGq1EugJd4&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener"></a>
+
+<div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%;
+ padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;
+ border-radius: 8px; will-change: transform;">
+  <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
+    src="https://www.canva.com/design/DAGrmhaLkio/PQLaOJ7NL1KH6a_Uy8YW0Q/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
+  </iframe>
+</div>
+<a href="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAGrmhaLkio&#x2F;PQLaOJ7NL1KH6a_Uy8YW0Q&#x2F;view?utm_content=DAGrmhaLkio&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener"></a>
+
+								<a href="#" class="btn tm-btn tm-font-big" data-nav-link="#tmNavLink3">Continue...</a>
+
+								
+							</p>
+
+						</div>     		          	
+					</section>
+
+					<!-- section 3 -->
+					<section id="tm-section-3" class="tm-section">
+						<div class="ml-auto">
+							<header class="mb-4"><h1 class="tm-text-shadow">Shape the Future</h1></header>
+							<p class="mb-5 tm-font-big"></p>
+							<p class="mb-5 tm-font-big">Give us suggestions!!</p>
+							<p class="mb-5 tm-font-big">Form for feedback & what we should teach next: </p>
+							<p class="mb-5 tm-font-big" style="margin-bottom: 4rem !important;"><!-- Added extra space here --></p>
+							<p class="mb-5 tm-font-big">Sign up for reminders! </p>	
+							<p class="mb-5 tm-font-big">Form to sign up for weekly reminders for classes & further updates: </p>
+							<a href="#" class="btn tm-btn tm-font-big" data-nav-link="#tmNavLink4">Continue...</a>
+						</div>              
+					</section>
+
+					<!-- section 4 -->
+					<section id="tm-section-4" class="tm-section">
+						<div class="tm-bg-transparent-black tm-contact-box-pad">
+							<div class="container">
+								<div class="row mb-4">
+									<div class="col-sm-12">
+										<header><h2 class="tm-text-shadow">Contact Us</h2></header>
+									</div>
+								</div>
+								<div class="row tm-page-4-content">
+									<div class="col-xs-12 col-sm-8 col-sm-offset-2 col-xl-6 col-xl-offset-3 my-4">
+										<form target="_self" enctype="multipart/form-data" action="https://formkeep.com/f/8aa4792df709" accept-charset="UTF-8" method="post">
+											<fieldset>
+												<div class="row">
+													<div class="form-group col-xs-6">
+														<label for="First_Name">First Name</label>
+														<input type="text" name="First Name" id="First_Name" autofocus="autofocus" class="form-control" />
+													</div>
+													<div class="form-group col-xs-6">
+														<label for="Last_Name">Last Name</label>
+														<input type="text" name="Last Name" id="Last_Name" class="form-control" />
+													</div>
+												</div>
+												<div class="row">
+													<div class="form-group col-xs-6">
+														<label title="required" for="Email">Email *</label>
+														<input type="email" name="Email" id="Email" required="required" placeholder="example@example.com" class="form-control" />
+													</div>
+													<div class="form-group col-xs-6">
+														<label for="Phone">Phone</label>
+														<input type="tel" name="Phone" id="Phone" placeholder="123-456-7890" class="form-control" />
+													</div>
+												</div>
+												<div class="row">
+													<div class="form-group col-xs-12">
+														<label for="Reason">Reason *</label>
+														<select name="Reason" id="Reason" required="required" class="form-control">
+															<option value="">Choose</option>
+															<option value="General Questions">General Questions</option>
+															<option value="Technical Support">Technical Support</option>
+															<option value="Workshop Help">Workshop Help</option>
+															<option value="Feedback & Suggestions">Feedback</option>
+															<option value="Accessibility Help">Accessibility Help</option>
+															<option value="Other">Other</option>
+														</select>
+													</div>
+												</div>
+												<div class="row">
+													<div class="form-group col-xs-12">
+														<label title="required" for="Message">Message *</label>
+														<textarea name="Message" id="Message" required="required" class="form-control" rows="6" placeholder="Your message here..."></textarea>
+														<input type="submit" value="Submit" class="btn btn-block btn-primary" style="margin-top: 20px;" />
+													</div>
+												</div>
+											</fieldset>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</section>
+
+			</div>
+		</div>
+	</div>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+
+	<script>
+		var sidebarVisible = false;
+		var currentPageID = "#tm-section-1";
+
+		// Setup Carousel
+		function setupCarousel() {
+			// If current page isn't Carousel page, don't do anything.
+			if($('#tm-section-2').css('display') == "none") {
+			}
+			else {	
+				// Carousel setup code would go here if needed
+			}
+		}
+
+		// Setup Nav
+		function setupNav() {
+			// Add Event Listener to each Nav item
+			$(".tm-main-nav a").click(function(e){
+				e.preventDefault();
+				
+				var currentNavItem = $(this);
+				changePage(currentNavItem);
+				
+				setupCarousel();
+				setupFooter();
+
+				// Hide the nav on mobile
+				$("#tmSideBar").removeClass("show");
+			});	    
+		}
+
+		function changePage(currentNavItem) {
+			// Update Nav items
+			$(".tm-main-nav a").removeClass("active");
+			currentNavItem.addClass("active");
+
+			$(currentPageID).hide();
+
+			// Show current page
+			currentPageID = currentNavItem.data("page");
+			$(currentPageID).fadeIn(1000);
+		}
+
+		// Setup Nav Toggle Button
+		function setupNavToggle() {
+			$("#tmMainNavToggle").on("click", function(){
+				$("#tmSideBar").toggleClass("show");
+			});
+		}
+
+		// Setup Footer
+		function setupFooter() {
+			// Footer setup code
+		}
+
+		// Everything is loaded including images.
+		$(window).on("load", function(){
+
+			// Render the page on modern browser only.
+			if(renderPage) {
+				// Remove loader
+				$('body').addClass('loaded');
+
+				// Page transition
+				var allPages = $(".tm-section");
+
+				// Handle click of "Continue", which changes to next page
+				var linkToAnotherPage = $("a.tm-btn[data-nav-link]");
+				
+				if(linkToAnotherPage != null) {
+					
+					linkToAnotherPage.on("click", function(e){
+						e.preventDefault();
+						var navItemToHighlight = $(this).data("navLink");
+						$(navItemToHighlight).click();
+					});
+				}
+				
+				// Hide all pages
+				allPages.hide();
+
+				$("#tm-section-1").fadeIn();
+
+				// Setup Carousel, Nav, and Nav Toggle
+				setupCarousel();
+				setupNav();
+				setupNavToggle();
+				setupFooter();
+
+				// Resize Carousel upon window resize
+				$(window).resize(function() {
+					setupCarousel();
+					setupFooter();
+				});
+			}	      	
+		});
+	</script>
+</body>
+</html>
